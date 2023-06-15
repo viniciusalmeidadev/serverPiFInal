@@ -1,0 +1,90 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="messages"></div>
+    <form id="form">
+        <input placeholder="alerta id" type="text" id="alerta_id">
+        <input placeholder="latitude" type="text" id="latitude">
+        <input placeholder="longitude" type="text" id="longitude">
+        <input placeholder="tipoOcorrido" type="text" id="tipo">
+        <input placeholder="descricao ocorrido" type="text" id="descricao">
+        <input placeholder="usuario" type="text" id="user">
+        <input type="submit">
+
+        <img src="http://localhost:4010/imagem/7ed387498a0ad1473b363e826ee92cd3" alt="">
+    </form>
+
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+    <script>
+var response = []
+
+async function pegaUsuariosCompletados(){
+    const url = 'http://localhost:4010/pegaAlertas';
+
+    response = await fetch(url)
+    .then(data => data.json())
+    .catch(err => console.log(err))
+
+    console.log(response)
+
+    for(alerta of response){
+        var item = document.createElement('li');
+        item.textContent = alerta.descricao
+        messages.appendChild(item);
+    }
+
+
+}
+pegaUsuariosCompletados()
+
+
+    
+
+    var socket = io();
+
+    var messages = document.getElementById('messages');
+    var form = document.getElementById('form');
+   
+
+    
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var latitude = document.getElementById('latitude').value;
+        var longitude = document.getElementById('longitude').value;
+        var user_id = document.getElementById('user').value;
+        var tipo = document.getElementById('tipo').value;
+        var descricao = document.getElementById('descricao').value;
+        var alerta_id = document.getElementById('alerta_id').value;
+
+        if (latitude && longitude && user && tipo && descricao) {
+        
+        socket.emit('chat message', {alerta_id,latitude, longitude, user_id, tipo, descricao});
+       
+        }
+    });
+
+    socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg.descricao;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        console.log(msg)
+    });
+
+
+
+
+    </script>
+</html>
+
+
